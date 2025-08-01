@@ -3,25 +3,37 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsnd --env-file .env --respawn --clear src/server.ts",
+    "dev": "tsnd --respawn --clear src/server.ts",
     "build": "rimraf ./dist && tsc",
-    "start": "npm run build && node dist/app.js"
+    "start": "npm run build && node dist/app.js",
+    "migrate:make": "kysely migrate make",
+    "migrate:up": "kysely migrate up",
+    "migrate:down": "kysely migrate down",
+    "migrate:latest": "kysely migrate latest",
+    "migrate:status": "kysely migrate status",
+    "migrate:reset": "kysely migrate down --to 0 && kysely migrate latest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "dotenv": "^17.2.1",
     "env-var": "^7.5.0",
     "express": "^5.1.0",
+    "helmet": "^8.1.0",
     "kysely": "^0.28.2",
+    "kysely-ctl": "^0.14.0",
+    "morgan": "^1.10.1",
     "pg": "^8.15.5",
     "zod": "^3.24.3"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@types/express": "^5.0.1",
+    "@types/morgan": "^1.9.10",
     "@types/node": "^22.15.2",
+    "@types/pg": "^8.15.5",
     "rimraf": "^6.0.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"

@@ -1,29 +1,45 @@
-// src/middleware/errorHandler.ts
 import type { Request, Response, NextFunction } from "express";
-import { CustomError } from "../error/customError";
+import { CustomError } from "../utils/customError";
+import { errorMessage } from "../utils/response";
 
 export const errorHandler = (
-	err: Error,
-	req: Request,
-	res: Response,
-	next: NextFunction,
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  error: any,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
-	console.error(`[Error] ${err.message}`, err);
+  // Log básico del error
+  console.error("Error:", error.message);
+  console.error("Stack:", error.stack);
 
-	if (err instanceof CustomError) {
-		return res.status(err.statusCode).json({
-			success: false,
-			statusCode: err.statusCode,
-			code: err.code || "ERROR",
-			message: err.message,
-			details: err.details,
-		});
-	}
+  let statusCode = 500;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  let response: any;
 
-	return res.status(500).json({
-		success: false,
-		code: "INTERNAL_ERROR",
-		message: "Error interno del servidor",
-		details: process.env.NODE_ENV === "development" ? err.message : undefined,
-	});
+  if (error instanceof CustomError) {
+    statusCode = error.statusCode;
+    response = error.responseData;
+  } else {
+    // errores que no son CustomError
+    statusCode = error.statusCode || 500;
+    response =
+      error.responseData ||
+      errorMessage(statusCode, error.message || "Something went wrong");
+  }
+
+  if (process.env.NODE_ENV === "development") {
+    response.stack = error.stack;
+  }
+
+  res.status(statusCode).json(response);
+};
+
+export const notFoundHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const message = `Route ${req.method} ${req.path} not found`;
+  return next(new CustomError(404, message));
 };
