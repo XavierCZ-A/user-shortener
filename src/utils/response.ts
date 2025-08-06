@@ -25,7 +25,10 @@ export function errorMessage(
  * @param  {Number} [status=200] The HTTP status code
  * @return {Object} An object with the structure {messages: [...messages], type: success}
  */
-export function successMessage(messages = null, status = 200) {
+export function successMessage(
+  messages: string[] | string | null,
+  status = 200,
+) {
   return {
     messages: Array.isArray(messages) ? messages : [messages],
     status,

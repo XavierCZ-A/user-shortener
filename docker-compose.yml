@@ -1,0 +1,16 @@
+services:
+  postgres-db:
+    image: postgres:16.3
+    restart: always
+    container_name: users-shortener-service
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - users-service-data:/var/lib/postgresql/data
+    ports:
+      - 5436:5432
+
+volumes:
+  users-service-data:
